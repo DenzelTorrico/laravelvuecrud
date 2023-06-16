@@ -43,7 +43,8 @@ Route::get("crud",function(){
 
 Route::get("/productos",[ProductController::class,"index"])->name("productos");
 Route::get("/getproductos",[ProductController::class,"GetProduct"]);
-Route::Get("/getproductosfilter",[ProductController::class,"GetProductoFilter"]);
+Route::get("/getproductosfilter",[ProductController::class,"GetProductoFilter"]);
+Route::get("/getproductosfiltergroup",[ProductController::class,"GetProductoFilterGroup"]);
 /*Route::get("productos", function(){
     return Inertia::render("Producto");
 })->name("productos");

@@ -25,6 +25,32 @@ class ProductController extends Controller
     return response()->json(Product::BuscarSearch($search));
 }
 
+public function GetProductoFilterGroup(Request $request){
+  
+
+    $producto = Product::query();
+    if($request->has("marca")){
+        $producto->where("brand",$request->get("marca"));
+    }
+
+    if($request->has("precio")){
+        $producto->where("price",$request->get("precio"));
+    }
+
+    if($request->has("categoria")){
+        $producto->where("category", $request->get("categoria"));
+    }
+
+    if($request->has("color")){
+        $producto->where("color", $request->get("color"));
+    }
+   
+    $productosFiltrados = $producto->paginate(5);
+
+    return response()->json($productosFiltrados);
+   // return response()->json($productosFiltrados);
+}
+
     
     
     

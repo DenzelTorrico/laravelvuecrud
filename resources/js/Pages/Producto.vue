@@ -19,12 +19,14 @@ import { Head } from '@inertiajs/vue3';
                         <h1 class="text-2xl">Productos</h1>
                         <label>Buscar</label>
                         <input type="text" v-model="buscar" @input="getProductFilter(buscar)" name="buscar" id="buscar" placeholder="buscar">
-                        <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded ml-2" @click="showFilterForm">Filtrar</button>
+                        <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded ml-2" @click="MostrarModal">Filtrar</button>
+                        <p>{{ showModal }}</p>
+                        <p>{{ options.categoria }}</p>
                         <label v-if="isLoading" class="mt-4">
                           Cargando<i class="fa-solid fa-rotate fa-spin"></i>
                         </label>
                           <!-- Componente FilterProduct -->
-        <filter-product v-if="showFilter" @filter="applyFilter" />
+                          <filter-product v-if="showModal" :filter-data="options"  @filter="handleFilter" />
                         <div class=" max-h-[500px] overflow-y-auto">
                           <table ref="productTable" class="min-w-full bg-white border border-gray-200">
   <thead>
@@ -84,7 +86,6 @@ import { Head } from '@inertiajs/vue3';
 
 <script>
 import FilterProduct from '@/Components/FilterProduct.vue';
-
 export default {
     data() {
         return {
@@ -95,6 +96,18 @@ export default {
             totalItems: 0,
             isLoading: false,
             isLoadingPagination:false,
+            showModal:false,
+            totalFilter:0,
+            filterData:{
+              marca:"MARCA DE MI MARCA",
+              apolio:""
+            },
+            options: {
+              marca:"",
+              color:"",
+              precio:"",
+              categoria:"",
+            }
 
         };
     },
@@ -105,16 +118,64 @@ export default {
         this.getProducts();
     },
     methods: {
-      showFilterForm() {
-      this.showFilter = true;
+     MostrarModal(){
+      this.showModal=true     },
+    handleFilter(filterData) {
+      // Lógica para manejar los datos del filtro
+      this.showModal = filterData.showModal
+      //console.log(filterData.color)
+      this.currentPage = 1
+      this.getProductFilterButton(filterData.marca,filterData.color,filterData.precio,filterData.categoria,this.currentPage)
+      //console.log(filterData.categoria);
     },
-    applyFilter(filterData) {
-      // Aquí puedes hacer algo con los datos del filtro (marca, color, precio, categoría)
-      // por ejemplo, realizar una llamada a la API para obtener los productos filtrados.
+      getProductFilterButton(marca, color, precio, categoria,page) {
+                //console.log(marca,color,precio,categoria)
 
-      // Una vez que hayas aplicado el filtro, puedes ocultar el formulario de filtro.
-      this.showFilter = false;
-    },
+            this.currentPage = page
+            let config = {
+              params: {
+                page:page
+              }
+            };
+
+            this.options.marca = marca
+            this.options.color = color
+            this.options.categoria = categoria
+            this.options.precio = precio
+         
+            if ( this.options.marca != null &&  this.options.marca !== '') {
+              config.params['marca'] =  this.options.marca;
+             
+            }
+
+            if ( this.options.color != null &&  this.options.color !== '') {
+              config.params['color'] =  this.options.color;
+            }
+            if (this.options.categoria != null && this.options.categoria !== '') {
+              config.params['categoria'] = this.options.categoria;
+            }
+            if (this.options.precio != null && this.options.precio !== '') {
+              config.params['precio'] = this.options.precio;
+            }
+            
+
+            axios
+              .get('/getproductosfiltergroup', config)
+              .then(response => {
+                //console.log(response.data);
+                this.products = response.data.data;
+                this.currentPage = response.data.current_page;
+                this.lastPage = response.data.last_page;
+                this.totalItems = response.data.total;
+              })
+              .catch(error => {
+                console.log(error);
+              })
+              .finally(() => {
+                this.isLoading = false;
+              });
+            },
+
         getProductFilter(search,page) {
             this.currentPage = page
             this.isLoading = true; // Activa el indicador de carga
@@ -165,6 +226,8 @@ export default {
 
     if (this.buscar) {
       this.getProductFilter(this.buscar,page);
+    }else if (this.options.marca || this.options.color || this.options.categoria || this.options.precio) {
+        this.getProductFilterButton(this.options.marca, this.options.color, this.options.precio, this.options.categoria, page);
     } else {
       this.getProducts(page);
     }
