@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ControllerCategory;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Departament;
@@ -29,6 +30,8 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::get("category",[ControllerCategory::class,"index"])->name("category");
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
