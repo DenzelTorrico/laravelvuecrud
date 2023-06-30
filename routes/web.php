@@ -31,7 +31,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get("category",[ControllerCategory::class,"index"])->name("category");
+Route::get("/category",[ControllerCategory::class,"index"])->name("category");
+Route::get("/api/categorias",[ControllerCategory::class,"getcategorys"]);
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

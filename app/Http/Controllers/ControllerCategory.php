@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,5 +12,10 @@ class ControllerCategory extends Controller
 {
     public function index(){
         return Inertia::render("Categoria");
+    }
+    public function getcategorys(){
+            $categoria = Category::all();
+
+            return response()->json($categoria);
     }
 }
