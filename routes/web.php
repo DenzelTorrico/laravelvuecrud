@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ControllerCategory;
+use App\Http\Controllers\ControllerEstado;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Departament;
@@ -30,6 +32,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get("/category",[ControllerCategory::class,"index"])->name("category");
+Route::get("/api/categorias",[ControllerCategory::class,"getcategorys"]);
+
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -49,6 +55,9 @@ Route::get("/getproductosfiltergroup",[ProductController::class,"GetProductoFilt
     return Inertia::render("Producto");
 })->name("productos");
 */
+Route::get("state",[ControllerEstado::class,"index"])->name("state");
+
+
 
 Route::get("/departamentos",function(){
     $departamentos = Departament::all();
